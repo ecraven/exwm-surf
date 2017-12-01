@@ -42,13 +42,24 @@
                                              ("auk" . "http://www.amazon.co.uk/s?field-keywords=%s&link_code=qs&index=blended")
                                              ("osm" . "http://nominatim.openstreetmap.org/search.php?q=%s")
                                              ("df" . "http://dwarffortresswiki.org/index.php?search=%s&title=Special:Search"))
-  "Search prefixes for ‘exwm-surf-history’.")
+  "Search prefixes for ‘exwm-surf-history’.
+
+%s is replaced by the search string.")
 
 (defun exwm-surf-read-lines (path)
   "Return a list of lines of file PATH."
   (with-temp-buffer
     (insert-file-contents path)
     (split-string (buffer-string) "\n" t)))
+
+(defun exwm-surf-open-in-browser ()
+  "Open the current Surf URL in the default browser.
+
+See `browse-url'."
+  (interactive)
+  (let* ((winid (exwm-surf-current-buffer-window-id))
+         (url (exwm-surf-get-prop exwm-surf-prop-uri winid)))
+    (browse-url url)))
 
 (defun exwm-surf-history ()
   "Send Surf to a new URL, providing completion from history.
@@ -66,7 +77,7 @@ See `exwm-surf-history-file'."
                 line))
          (search-prefix (assoc-default first-word exwm-surf-search-prefixes-alist)))
     (if search-prefix
-        (exwm-surf-set-prop exwm-surf-prop-go winid (url-encode-url (format search-prefix (substring-no-properties line (1+ first-space)))))
+        (exwm-surf-set-prop exwm-surf-prop-go winid (format search-prefix (url-encode-url (substring-no-properties line (1+ first-space)))))
       (when (and url
                  (stringp url)
                  (not (string-empty-p url)))
@@ -129,7 +140,8 @@ See `exwm-surf-bookmark-file'."
     (exwm-surf-bind-key "C-o" #'exwm-surf-history)
     (exwm-surf-bind-key "M-C-o" #'exwm-surf-edit-url)
     (exwm-surf-bind-key "M-b" #'exwm-surf-bookmark)
-    (exwm-surf-bind-key "C-M-b" #'exwm-surf-add-bookmark)))
+    (exwm-surf-bind-key "C-M-b" #'exwm-surf-add-bookmark)
+    (exwm-surf-bind-key "M-f" #'exwm-surf-open-in-browser)))
 
 (defun exwm-surf-set-prop (prop winid value)
   "Set property PROP on X window WINID to VALUE."

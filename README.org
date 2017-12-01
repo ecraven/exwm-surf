@@ -1,0 +1,54 @@
+* exwm-surf
+#+html: <p align="center"><img src="https://melpa.org/packages/exwm-surf-badge.svg" /></p>
+
+# [[./celestial-mode-line.png]]
+
+# Screenshot: 5 days to full moon, sunset at 16:12.
+
+** Quick start
+Install =exwm-surf= from melpa.
+
+Download =surf= from https://surf.suckless.org.
+
+Apply [[./exwm-surf.diff]] to your download:
+
+#+BEGIN_SRC bash
+git clone https://git.suckless.org/surf
+cd surf
+patch -p1 < exwm-surf.diff
+make
+#+END_SRC
+
+Load and configure exwm-surf:
+#+BEGIN_SRC elisp
+(use-package exwm-surf
+  :config
+  (setq exwm-surf-history-file "/home/me/.surf/history")
+  (setq exwm-surf-bookmark-file "/home/me/.surf/bookmarks")
+  (add-hook 'exwm-manage-finish-hook 'exwm-surf-init))
+#+END_SRC
+
+This will bind the following keys in exwm surf buffers:
+- ~C-s~ :: Incremental search forward (=exwm-surf-search=)
+- ~C-r~ :: Incremental search forward (=exwm-surf-search=)
+- ~C-o~ :: Open a new url (=exwm-surf-history=)
+- ~C-M-o~ :: Edit the current URL (=exwm-surf-edit-url=)
+- ~M-b~ :: Go to a bookmark (=exwm-surf-bookmark=)
+- ~C-M-b~ :: Create a new bookmark (=exwm-surf-bookmark=)
+- ~M-f~ :: Open the current URL in the default browser (=exwm-surf-open-in-browser=)
+
+When entering a search (~C-s~, ~C-r~), you can enter a search prefix (see =exwm-surf-search-prefixes-alist=).
+
+By default, you can use:
+- =g= :: DuckDuckGo
+- =go= :: Google
+- =arch= :: Arch Linux wiki
+- =wen= :: English Wikipedia
+- =wde= :: German Wikipedia
+- =osm= :: OpenStreetMap search
+- =df= :: Dwarf Fortress wiki
+
+Add entries like this:
+#+BEGIN_SRC lisp
+(push '("emacs" . "https://www.emacswiki.org/emacs?search=%s&lang=&dosearch=Go!") exwm-surf-search-prefixes-alist)
+#+END_SRC

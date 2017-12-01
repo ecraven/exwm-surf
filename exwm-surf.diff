@@ -1,0 +1,197 @@
+diff --git a/config.def.h b/config.def.h
+index 2e735bf..0d7f419 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -6,6 +6,7 @@ static char *styledir       = "~/.surf/styles/";
+ static char *certdir        = "~/.surf/certificates/";
+ static char *cachedir       = "~/.surf/cache/";
+ static char *cookiefile     = "~/.surf/cookies.txt";
++static char *historyfile    = "~/.surf/history";
+ 
+ /* Webkit default features */
+ /* Highest priority value will be used.
+@@ -78,7 +79,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
+ /* DOWNLOAD(URI, referer) */
+ #define DOWNLOAD(u, r) { \
+         .v = (const char *[]){ "st", "-e", "/bin/sh", "-c",\
+-             "curl -g -L -J -O -A \"$1\" -b \"$2\" -c \"$2\"" \
++             "pwd ; curl -g -L -J -O -A \"$1\" -b \"$2\" -c \"$2\"" \
+              " -e \"$3\" \"$4\"; read", \
+              "surf-download", useragent, cookiefile, r, u, NULL \
+         } \
+@@ -121,6 +122,7 @@ static SiteSpecific certs[] = {
+ };
+ 
+ #define MODKEY GDK_CONTROL_MASK
++#define ALTKEY GDK_MOD1_MASK
+ 
+ /* hotkeys */
+ /*
+@@ -129,28 +131,26 @@ static SiteSpecific certs[] = {
+  */
+ static Key keys[] = {
+ 	/* modifier              keyval          function    arg */
+-	{ MODKEY,                GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
+-	{ MODKEY,                GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+-	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+-
+ 	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
+-	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
++	{ MODKEY,                GDK_KEY_g,      stop,       { 0 } },
+ 
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .i = 1 } },
+ 	{ MODKEY,                GDK_KEY_r,      reload,     { .i = 0 } },
+ 
+-	{ MODKEY,                GDK_KEY_l,      navigate,   { .i = +1 } },
+-	{ MODKEY,                GDK_KEY_h,      navigate,   { .i = -1 } },
++	{ MODKEY,                GDK_KEY_f,      navigate,   { .i = +1 } },
++	{ MODKEY,                GDK_KEY_b,      navigate,   { .i = -1 } },
+ 
+ 	/* Currently we have to use scrolling steps that WebKit2GTK+ gives us
+ 	 * d: step down, u: step up, r: step right, l:step left
+ 	 * D: page down, U: page up */
+-	{ MODKEY,                GDK_KEY_j,      scroll,     { .i = 'd' } },
+-	{ MODKEY,                GDK_KEY_k,      scroll,     { .i = 'u' } },
+-	{ MODKEY,                GDK_KEY_b,      scroll,     { .i = 'U' } },
+-	{ MODKEY,                GDK_KEY_space,  scroll,     { .i = 'D' } },
+-	{ MODKEY,                GDK_KEY_i,      scroll,     { .i = 'r' } },
+-	{ MODKEY,                GDK_KEY_u,      scroll,     { .i = 'l' } },
++	{ MODKEY,                GDK_KEY_n,      scroll,     { .i = 'd' } },
++	{ MODKEY,                GDK_KEY_p,      scroll,     { .i = 'u' } },
++	{ MODKEY,                GDK_KEY_v,      scroll,     { .i = 'D' } },
++	{ ALTKEY,                GDK_KEY_v,      scroll,     { .i = 'U' } },
++        { ALTKEY|GDK_SHIFT_MASK, GDK_KEY_less,   scroll,     { .i = 't' } },
++	{ ALTKEY|GDK_SHIFT_MASK, GDK_KEY_greater,scroll,     { .i = 'b' } },
++	// { MODKEY,                GDK_KEY_i,      scroll,     { .i = 'r' } },
++	// { MODKEY,                GDK_KEY_u,      scroll,     { .i = 'l' } },
+ 
+ 
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_j,      zoom,       { .i = -1 } },
+@@ -159,11 +159,11 @@ static Key keys[] = {
+ 	{ MODKEY,                GDK_KEY_minus,  zoom,       { .i = -1 } },
+ 	{ MODKEY,                GDK_KEY_plus,   zoom,       { .i = +1 } },
+ 
+-	{ MODKEY,                GDK_KEY_p,      clipboard,  { .i = 1 } },
+-	{ MODKEY,                GDK_KEY_y,      clipboard,  { .i = 0 } },
++	{ MODKEY,                GDK_KEY_y,      clipboard,  { .i = 1 } },
++	{ MODKEY,                GDK_KEY_w,      clipboard,  { .i = 0 } },
+ 
+-	{ MODKEY,                GDK_KEY_n,      find,       { .i = +1 } },
+-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_n,      find,       { .i = -1 } },
++	// { MODKEY,                GDK_KEY_n,      find,       { .i = +1 } },
++	// { MODKEY|GDK_SHIFT_MASK, GDK_KEY_n,      find,       { .i = -1 } },
+ 
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_p,      print,      { 0 } },
+ 	{ MODKEY,                GDK_KEY_t,      showcert,   { 0 } },
+@@ -177,7 +177,7 @@ static Key keys[] = {
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_g,      toggle,     { .i = Geolocation } },
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_s,      toggle,     { .i = JavaScript } },
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_i,      toggle,     { .i = LoadImages } },
+-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_v,      toggle,     { .i = Plugins } },
++	// { MODKEY|GDK_SHIFT_MASK, GDK_KEY_v,      toggle,     { .i = Plugins } },
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_b,      toggle,     { .i = ScrollBars } },
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_t,      toggle,     { .i = StrictTLS } },
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_m,      toggle,     { .i = Style } },
+@@ -190,7 +190,7 @@ static Button buttons[] = {
+ 	{ OnLink,       0,              2,      clicknewwindow, { .i = 0 },     1 },
+ 	{ OnLink,       MODKEY,         2,      clicknewwindow, { .i = 1 },     1 },
+ 	{ OnLink,       MODKEY,         1,      clicknewwindow, { .i = 1 },     1 },
+-	{ OnAny,        0,              8,      clicknavigate,  { .i = -1 },    1 },
+-	{ OnAny,        0,              9,      clicknavigate,  { .i = +1 },    1 },
++	// { OnAny,        0,              8,      clicknavigate,  { .i = -1 },    1 },
++	// { OnAny,        0,              9,      clicknavigate,  { .i = +1 },    1 },
+ 	{ OnMedia,      MODKEY,         1,      clickexternplayer, { 0 },       1 },
+ };
+diff --git a/surf.c b/surf.c
+index 0f8b9c9..84bfa86 100644
+--- a/surf.c
++++ b/surf.c
+@@ -32,7 +32,7 @@
+ #include "arg.h"
+ 
+ #define LENGTH(x)               (sizeof(x) / sizeof(x[0]))
+-#define CLEANMASK(mask)         (mask & (MODKEY|GDK_SHIFT_MASK))
++#define CLEANMASK(mask)         (mask & (ALTKEY|MODKEY|GDK_SHIFT_MASK))
+ 
+ enum { AtomFind, AtomGo, AtomUri, AtomLast };
+ 
+@@ -340,6 +340,7 @@ setup(void)
+ 	scriptfile = buildfile(scriptfile);
+ 	cachedir   = buildpath(cachedir);
+ 	certdir    = buildpath(certdir);
++        historyfile = buildfile(historyfile);
+ 
+ 	gdkkb = gdk_seat_get_keyboard(gdk_display_get_default_seat(gdpy));
+ 
+@@ -1044,6 +1045,7 @@ cleanup(void)
+ 	g_free(cookiefile);
+ 	g_free(scriptfile);
+ 	g_free(stylefile);
++        g_free(historyfile);
+ 	g_free(cachedir);
+ 	XCloseDisplay(dpy);
+ }
+@@ -1420,6 +1422,11 @@ loadfailedtls(WebKitWebView *v, gchar *uri, GTlsCertificate *cert,
+ void
+ loadchanged(WebKitWebView *v, WebKitLoadEvent e, Client *c)
+ {
++	FILE *history;
++	char timebuffer[30];
++	struct tm *tm_info;
++	time_t timer;
++
+ 	const char *uri = geturi(c);
+ 
+ 	switch (e) {
+@@ -1450,6 +1457,16 @@ loadchanged(WebKitWebView *v, WebKitLoadEvent e, Client *c)
+ 		evalscript(c, "document.documentElement.style.overflow = '%s'",
+ 		    enablescrollbars ? "auto" : "hidden");
+ 		*/
++                time(&timer);
++                tm_info = localtime(&timer);
++                history = fopen(historyfile, "a+");
++                strftime(timebuffer, 30, "%Y-%m-%d %H:%M:%S", tm_info);
++                fputs(timebuffer, history);
++                fputs(" ", history);
++                fputs(geturi(c), history);
++                fputs("\n", history);
++                fclose(history);
++
+ 		runscript(c);
+ 		break;
+ 	}
+@@ -1788,6 +1805,12 @@ scroll(Client *c, const Arg *a)
+ 	case 'u':
+ 		ev->key.keyval = GDK_KEY_Up;
+ 		break;
++        case 't':
++		ev->key.keyval = GDK_KEY_Home;
++		break;
++        case 'b':
++		ev->key.keyval = GDK_KEY_End;
++		break;
+ 	}
+ 
+ 	gdk_event_put(ev);
+@@ -1856,13 +1879,16 @@ find(Client *c, const Arg *a)
+ 	} else {
+ 		s = getatom(c, AtomFind);
+ 		f = webkit_find_controller_get_search_text(c->finder);
+-
+-		if (g_strcmp0(f, s) == 0) /* reset search */
++                if (g_strcmp0("!!INCREMENTAL_SEARCH_NEXT!!", s) == 0) {
++                  webkit_find_controller_search_next(c->finder);
++                } else if(g_strcmp0("!!INCREMENTAL_SEARCH_PREVIOUS!!", s) == 0) {
++                  webkit_find_controller_search_previous(c->finder);
++                } else if (g_strcmp0(f, s) == 0) /* reset search */
+ 			webkit_find_controller_search(c->finder, "", findopts,
+ 			                              G_MAXUINT);
+-
+-		webkit_find_controller_search(c->finder, s, findopts,
+-		                              G_MAXUINT);
++                else
++                  webkit_find_controller_search(c->finder, s, findopts,
++                                                G_MAXUINT);
+ 
+ 		if (strcmp(s, "") == 0)
+ 			webkit_find_controller_search_finish(c->finder);
