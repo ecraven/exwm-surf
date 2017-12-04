@@ -193,6 +193,7 @@ See `exwm-surf-bookmark-file'."
       (push k exwm-input-prefix-keys))
     (local-set-key (kbd key) fun)))
 
+;;;###autoload
 (defun exwm-surf-init ()
   "Initialize keybindings in a Surf buffer."
   (when (string= "Surf" exwm-class-name)
