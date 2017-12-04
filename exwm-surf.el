@@ -23,10 +23,6 @@
 ;;   (add-hook 'exwm-manage-finish-hook 'exwm-surf-init))
 ;;
 ;;; Code:
-(defconst exwm-surf-prop-go "_SURF_GO" "X Atom for _SURF_GO.")
-(defconst exwm-surf-prop-uri "_SURF_URI" "X Atom for _SURF_URI.")
-(defconst exwm-surf-prop-find "_SURF_FIND" "X Atom for _SURF_FIND.")
-
 (defcustom exwm-surf-history-file nil "The location of the surf history file.")
 
 (defcustom exwm-surf-bookmark-file nil "The location of the surf bookmark file.")
@@ -45,6 +41,21 @@
   "Search prefixes for ‘exwm-surf-history’.
 
 %s is replaced by the search string.")
+
+(defcustom exwm-surf-key-bindings '(("C-s" . exwm-surf-search)
+                                    ("C-r" . exwm-surf-search)
+                                    ("C-o" . exwm-surf-history)
+                                    ("M-C-o" . exwm-surf-edit-url)
+                                    ("M-b" . exwm-surf-bookmark)
+                                    ("C-M-b" . exwm-surf-add-bookmark)
+                                    ("C-w" . exwm-surf-url-to-kill-ring)
+                                    ("C-y" . exwm-surf-yank-url)
+                                    ("M-f" . exwm-surf-open-in-browser))
+  "Key bindings in Surf buffers.")
+
+(defconst exwm-surf-prop-go "_SURF_GO" "X Atom for _SURF_GO.")
+(defconst exwm-surf-prop-uri "_SURF_URI" "X Atom for _SURF_URI.")
+(defconst exwm-surf-prop-find "_SURF_FIND" "X Atom for _SURF_FIND.")
 
 (defun exwm-surf-read-lines (path)
   "Return a list of lines of file PATH."
@@ -79,6 +90,7 @@ See `browse-url'."
 
 (defun exwm-surf-history ()
   "Send Surf to a new URL, providing completion from history.
+
 See `exwm-surf-history-file'."
   (interactive)
   (let* ((winid (exwm-surf-current-buffer-window-id))
@@ -151,15 +163,9 @@ See `exwm-surf-bookmark-file'."
   (when (string= "Surf" exwm-class-name)
     (make-local-variable 'exwm-input-prefix-keys)
     (make-local-variable 'exwm-mode-map)
-    (exwm-surf-bind-key "C-s" #'exwm-surf-search)
-    (exwm-surf-bind-key "C-r" #'exwm-surf-search)
-    (exwm-surf-bind-key "C-o" #'exwm-surf-history)
-    (exwm-surf-bind-key "M-C-o" #'exwm-surf-edit-url)
-    (exwm-surf-bind-key "M-b" #'exwm-surf-bookmark)
-    (exwm-surf-bind-key "C-M-b" #'exwm-surf-add-bookmark)
-    (exwm-surf-bind-key "C-w" #'exwm-surf-url-to-kill-ring)
-    (exwm-surf-bind-key "C-y" #'exwm-surf-yank-url)
-    (exwm-surf-bind-key "M-f" #'exwm-surf-open-in-browser)))
+    (mapcar (lambda (binding)
+              (exwm-surf-bind-key (car binding) (cdr binding)))
+            exwm-surf-key-bindings)))
 
 (defun exwm-surf-set-prop (prop winid value)
   "Set property PROP on X window WINID to VALUE."
