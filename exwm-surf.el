@@ -198,6 +198,9 @@ See `exwm-surf-bookmark-file'."
     (string-match "\"\\(.*\\)\"" text)
     (match-string 1 text)))
 
+;; this is accessed dynamically below
+(defvar exwm-surf-winid)
+
 (defun exwm-surf-search ()
   "Incremental search in exwm surf buffers."
   (interactive)
