@@ -44,9 +44,19 @@
 ;;
 ;;; Code:
 (require 'exwm)
-(defcustom exwm-surf-history-file nil "The location of the surf history file.")
 
-(defcustom exwm-surf-bookmark-file nil "The location of the surf bookmark file.")
+(defgroup exwm-surf nil
+  "Emacs interface for the surf browser under exwm."
+  :group 'multimedia
+  :prefix "exwm-surf-")
+
+(defcustom exwm-surf-history-file nil "The location of the surf history file."
+  :group 'exwm-surf
+  :type 'string)
+
+(defcustom exwm-surf-bookmark-file nil "The location of the surf bookmark file."
+  :group 'exwm-surf
+  :type 'string)
 
 (defcustom exwm-surf-search-prefixes-alist '(("g" . "http://duckduckgo.com/?q=%s")
                                              ("go" . "http://www.google.com/search?q=%s")
@@ -61,7 +71,9 @@
                                              ("df" . "http://dwarffortresswiki.org/index.php?search=%s&title=Special:Search"))
   "Search prefixes for ‘exwm-surf-history’.
 
-%s is replaced by the search string.")
+%s is replaced by the search string."
+  :group 'exwm-surf
+  :type '(alist :key-type (string :tag "Shortcut") :value-type (string :tag "URL")))
 
 (defcustom exwm-surf-key-bindings '(("C-s" . exwm-surf-search)
                                     ("C-r" . exwm-surf-search)
@@ -72,7 +84,9 @@
                                     ("C-w" . exwm-surf-url-to-kill-ring)
                                     ("C-y" . exwm-surf-yank-url)
                                     ("M-f" . exwm-surf-open-in-browser))
-  "Key bindings in Surf buffers.")
+  "Key bindings in Surf buffers."
+  :group 'exwm-surf
+  :type '(alist :key-type (string :tag "Key") :value-type (symbol :tag "Function")))
 
 (defconst exwm-surf-prop-go "_SURF_GO" "X Atom for _SURF_GO.")
 (defconst exwm-surf-prop-uri "_SURF_URI" "X Atom for _SURF_URI.")
