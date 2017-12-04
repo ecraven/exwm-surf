@@ -1,4 +1,4 @@
-;;; exwm-surf.el --- Interface for Surf under exwm -*-coding: utf-8 -*-
+;;; exwm-surf.el --- Interface for Surf (surf.suckless.org) under exwm -*-coding: utf-8 -*-
 
 ;; Copyright (C) 2017 craven@gmx.net
 
