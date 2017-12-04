@@ -61,6 +61,22 @@ See `browse-url'."
          (url (exwm-surf-get-prop exwm-surf-prop-uri winid)))
     (browse-url url)))
 
+(defun exwm-surf-url-to-kill-ring ()
+  "Put the current Surf URL into the kill ring."
+  (interactive)
+  (let* ((winid (exwm-surf-current-buffer-window-id))
+         (url (exwm-surf-get-prop exwm-surf-prop-uri winid)))
+    (kill-new url)
+    (message "%s" url)))
+
+(defun exwm-surf-yank-url ()
+  "Send Surf to the yanked URL."
+  (interactive)
+  (let* ((winid (exwm-surf-current-buffer-window-id))
+         (url (or (car kill-ring) "")))
+    (exwm-surf-set-prop exwm-surf-prop-go winid url)
+    (message "%s" url)))
+
 (defun exwm-surf-history ()
   "Send Surf to a new URL, providing completion from history.
 See `exwm-surf-history-file'."
@@ -141,6 +157,8 @@ See `exwm-surf-bookmark-file'."
     (exwm-surf-bind-key "M-C-o" #'exwm-surf-edit-url)
     (exwm-surf-bind-key "M-b" #'exwm-surf-bookmark)
     (exwm-surf-bind-key "C-M-b" #'exwm-surf-add-bookmark)
+    (exwm-surf-bind-key "C-w" #'exwm-surf-url-to-kill-ring)
+    (exwm-surf-bind-key "C-y" #'exwm-surf-yank-url)
     (exwm-surf-bind-key "M-f" #'exwm-surf-open-in-browser)))
 
 (defun exwm-surf-set-prop (prop winid value)
