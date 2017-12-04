@@ -5,7 +5,7 @@
 ;; Author: Peter <craven@gmx.net>
 ;; URL: https://github.com/ecraven/exwm-surf
 ;; Package-Version: 20171130
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "24.4") (exwm "0.16"))
 ;; Version: 0.1
 ;; Keywords: extensions
 ;; Created: 2017-11-30
@@ -43,6 +43,7 @@
 ;; See `exwm-search-prefixes-alist'.
 ;;
 ;;; Code:
+(require 'exwm)
 (defcustom exwm-surf-history-file nil "The location of the surf history file.")
 
 (defcustom exwm-surf-bookmark-file nil "The location of the surf bookmark file.")
