@@ -93,7 +93,7 @@ See `exwm-surf-history-file'."
                 line))
          (search-prefix (assoc-default first-word exwm-surf-search-prefixes-alist)))
     (if search-prefix
-        (exwm-surf-set-prop exwm-surf-prop-go winid (format search-prefix (url-encode-url (substring-no-properties line (1+ first-space)))))
+        (exwm-surf-set-prop exwm-surf-prop-go winid (url-encode-url (format search-prefix (substring-no-properties line (1+ first-space)))))
       (when (and url
                  (stringp url)
                  (not (string-empty-p url)))
